@@ -364,10 +364,31 @@ config MTK_SCS_FW_OFFLOAD
         depends on MTK_WIFI_DRIVER && MTK_SMART_CARRIER_SENSE_SUPPORT
         default n
 
+#config MTK_MT_DFS_SUPPORT
+#	bool "Dynamic Frequency Selection Support"
+#	depends on MTK_WIFI_DRIVER
+#	default y
+
 config MTK_MT_DFS_SUPPORT
 	bool "Dynamic Frequency Selection Support"
 	depends on MTK_WIFI_DRIVER
 	default y
+
+config MTK_DFS_DEBUG
+	bool "DFS Debug Support"
+	depends on MTK_MT_DFS_SUPPORT
+	default y
+	help
+	  Enable DFS debug commands for FCC certification testing.
+	  This enables RadarDebug, dfs_test_mode, etc.
+
+config MTK_RADAR_DEBUG
+	bool "Radar Debug Mode Support"
+	depends on MTK_MT_DFS_SUPPORT
+	default y
+	help
+	  Enable radar debug mode for lab testing.
+	  Radar signals are detected but channel switch is disabled.
 	
 config MTK_OFFCHANNEL_SCAN_FEATURE
 	bool "Channel Quality Monitor"

@@ -52,6 +52,8 @@ PKG_KCONFIG:= \
 	SCS_FW_OFFLOAD \
 	THERMAL_PROTECT_SUPPORT \
 	MT_DFS_SUPPORT \
+	DFS_DEBUG \
+	RADAR_DEBUG \
 	HDR_TRANS_TX_SUPPORT \
 	CHIP_MT7615E \
 	HDR_TRANS_RX_SUPPORT \
@@ -284,17 +286,17 @@ endif
 endif
 ifneq ($(CONFIG_MTK_WHNAT_SUPPORT), )
 ifneq ($(CONFIG_MTK_WARP_V2), )
-  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/warp_proxy/mtk_warp_proxy.ko
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi.ko \
+	$(PKG_BUILD_DIR)/embedded/plug_in/warp_proxy/mtk_warp_proxy.ko
   DEPENDS+=+kmod-warp
   AUTOLOAD:=$(call AutoProbe,mt_wifi mtk_warp_proxy)
 else
-  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi.ko \
+	$(PKG_BUILD_DIR)/embedded/plug_in/whnat/mt_whnat.ko
   AUTOLOAD:=$(call AutoProbe,mt_wifi mt_whnat)
 endif
 else
-  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi.ko
   AUTOLOAD:=$(call AutoProbe,mt_wifi)
 endif
 ifeq ($(CONFIG_MTK_CONNINFRA_APSOC),y)
@@ -312,15 +314,15 @@ endef
 
 
 define Build/Compile
-	
 ifeq ($(CONFIG_MTK_CHIP_MT7986),y)
 	sh $(shell pwd)/auto_gen_bin2h.sh $(CONFIG_MTK_WIFI_SKU_TYPE) $(CONFIG_MTK_WIFI_ADIE_TYPE) $(PKG_BUILD_DIR)
 endif
 	$(MAKE) -C "$(LINUX_DIR)" V=1 \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
-		M="$(PKG_BUILD_DIR)/mt_wifi_ap" \
+		M="$(PKG_BUILD_DIR)" \
 		LINUX_DIR="$(KERNEL_BUILD_DIR)" \
+		EXTRA_CFLAGS="-DDFS_DEBUG -DRADAR_DEBUG -DDFS_TEST_MODE -DMTK_DFS_DEBUG" \
 		$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_MTK_$c),CONFIG_$(c)=$(CONFIG_MTK_$(c)))) \
 		modules
 endef
@@ -341,7 +343,7 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX8400" ] ; then \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX6000.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX6000.bin \
-                        $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX8400.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX8400.bin \
 			$(1)/lib/firmware/; \
 		fi; \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX4200" ] ; then \
@@ -352,10 +354,10 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX7800.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX7800.bin \
 			$(1)/lib/firmware/; \
 		fi; \
-                if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX5400" ] ; then \
-                        $(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX5400.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX5400.bin \
-                        $(1)/lib/firmware/; \
-                fi; \
+		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX5400" ] ; then \
+			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX5400.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX5400.bin \
+			$(1)/lib/firmware/; \
+		fi; \
 	fi; \
 	if [ "$$(CONFIG_MTK_CHIP_MT7916)" = "y" ] ; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7916/rebb/* $(1)/lib/firmware/; \
@@ -376,7 +378,7 @@ else \
 	if [ "$$(CONFIG_MTK_CHIP_MT7986)" = "y" ] ; then \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX8400" ] ; then \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX6000.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX6000.bin \
-                        $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX8400.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX8400.bin \
 			$(1)/lib/firmware/; \
 		fi; \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX4200" ] ; then \
@@ -387,10 +389,10 @@ else \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX7800.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX7800.bin \
 			$(1)/lib/firmware/; \
 		fi; \
-                if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX5400" ] ; then \
-                        $(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX5400.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX5400.bin \
-                        $(1)/lib/firmware/; \
-                fi; \
+		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX5400" ] ; then \
+			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX5400.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX5400.bin \
+			$(1)/lib/firmware/; \
+		fi; \
 	fi; \
 	if [ "$$(CONFIG_MTK_CHIP_MT7916)" = "y" ] ; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7916/rebb/MT7916_iPAiLNA_EEPROM.bin \
@@ -399,11 +401,10 @@ else \
 		$(PKG_BUILD_DIR)/bin/mt7916/rebb/MT7916_ePAeLNA_EEPROM.bin \
 		$(1)/lib/firmware/; \
 	fi; \
-	if [ "$$(CONFIG_MTK_CHIP_MT7981)" = "y" ] ; then \
+		if [ "$$(CONFIG_MTK_CHIP_MT7981)" = "y" ] ; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin $(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_ePAeLNA_EEPROM.bin \
 		$(1)/lib/firmware/; \
 	fi; \
-fi
 endef
 
 $(eval $(call KernelPackage,mt_wifi))
