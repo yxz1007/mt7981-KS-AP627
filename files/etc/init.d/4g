@@ -1,0 +1,23 @@
+#!/bin/sh /etc/rc.common
+START=90
+
+start() {
+    echo 7 > /sys/class/gpio/export 2>/dev/null
+    echo 9 > /sys/class/gpio/export 2>/dev/null
+
+    sleep 0.1
+
+    echo out > /sys/class/gpio/gpio7/direction
+    echo out > /sys/class/gpio/gpio9/direction
+
+    # 复位拉低
+    echo 0 > /sys/class/gpio/gpio9/value
+    sleep 0.1
+
+    # 电源上电
+    echo 1 > /sys/class/gpio/gpio7/value
+    sleep 1
+
+    # 释放复位
+    echo 1 > /sys/class/gpio/gpio9/value
+}

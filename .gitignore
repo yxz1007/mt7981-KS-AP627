@@ -2,7 +2,7 @@
 .DS_Store
 .*.swp
 /env
-/dl
+#/dl
 /.config
 /.config.old
 /bin
@@ -10,12 +10,12 @@
 /staging_dir
 /tmp
 /logs
-/feeds
-/feeds.conf
-/files
+#/feeds
+#/feeds.conf
+#/files
 /overlay
-/package/feeds
-/package/openwrt-packages
+#/package/feeds
+#/package/openwrt-packages
 /*.patch
 key-build*
 *.orig
@@ -30,3 +30,7 @@ git-src
 .cproject
 .ccache
 .vscode
+feeds/*.index
+feeds/*.targetindex
+feeds/*.tmp
+*.log

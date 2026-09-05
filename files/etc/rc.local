@@ -1,0 +1,25 @@
+# 自动写入 EEPROM（仅当 factory 分区为空时）
+FACTORY_PART="/dev/mtd2"
+EEPROM_FILE="/etc/factory_eeprom.bin"
+
+if [ -f "$EEPROM_FILE" ]; then
+    # 读取 factory 前 2 字节，判断是否为空（0xffff）
+    FIRST_BYTES=$(hexdump -n 2 -e '2/1 "%02x"' "$FACTORY_PART" 2>/dev/null)
+    if [ "$FIRST_BYTES" = "ffff" ] || [ -z "$FIRST_BYTES" ]; then
+        echo "Factory partition empty, writing EEPROM..."
+        mtd write "$EEPROM_FILE" factory
+        echo "EEPROM written successfully."
+    else
+        echo "Factory partition already has EEPROM, skipping."
+    fi
+fi
+
+sleep 2
+/etc/init.d/network restart
+sleep 1
+ifconfig wlan0 down
+iw dev wlan0 set type __ap
+ifconfig wlan0 up
+hostapd -B /etc/hostapd.conf
+
+exit 0

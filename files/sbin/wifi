@@ -1,0 +1,20 @@
+#!/bin/sh
+ACTION="$1"
+case "$ACTION" in
+    up)
+        ubus call network.wireless up 2>/dev/null
+        ;;
+    down)
+        ubus call network.wireless down 2>/dev/null
+        ;;
+    reload)
+        ubus call network.wireless reload 2>/dev/null
+        ;;
+    status)
+        ubus call network.wireless status 2>/dev/null
+        ;;
+    *)
+        echo "Usage: $0 {up|down|reload|status}"
+        exit 1
+        ;;
+esac
