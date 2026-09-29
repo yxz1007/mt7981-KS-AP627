@@ -26,7 +26,7 @@ define Package/wapp
   CATEGORY:=MTK Properties
   TITLE:=wapp daemon
   SUBMENU:=Applications
-  DEPENDS:= +USE_UCLIBC:libpthread +USE_UCLIBC:librt +libkvcutil +libopenssl +libuci +libnl-tiny +WAPP_WPACTRL_SUPPORT:wpa-cli
+  DEPENDS:= +USE_UCLIBC:libpthread +USE_UCLIBC:librt +libkvcutil +libopenssl +libuci +libnl-tiny +wpa-cli
 endef
 
 define Package/wapp/description
