@@ -1,25 +1,3 @@
---- a/strtonum.c
-+++ b/strtonum.c
-@@ -53,7 +53,7 @@
- }
- 
- #ifndef HAVE_STRTOI
--int strtoi(const char *nptr, char **endptr, int base) {
-+int (int)strtol(const char *nptr, char **endptr, int base) {
-     return (int) strtol_with_range(nptr, endptr, base, INT_MIN, INT_MAX);
- }
- #endif
---- a/floppyd_io.c
-+++ b/floppyd_io.c
-@@ -470,7 +470,7 @@
- 	  p++;
- 	*drive = 0;
- 	if(*p >= '0' && *p <= '9')
--	  *drive = strtoi(p, &p, 0);
-+	  *drive = (int)strtol(p, &p, 0);
- 
- 	*display = strdup(newname);
- 
 --- a/config.c
 +++ b/config.c
 @@ -266,7 +266,7 @@
@@ -31,14 +9,14 @@
  		break;
  	    case T_UINT:
  		* ((unsigned int *)global_switches[i].address) = strtoui(s,0,0);
---- a/mtools.h
-+++ b/mtools.h
-@@ -188,7 +188,7 @@
- unsigned int strtoui(const char *nptr, char **endptr, int base);
- unsigned int atoui(const char *nptr);
- #ifndef HAVE_STRTOI
--int strtoi(const char *nptr, char **endptr, int base);
-+int (int)strtol(const char *nptr, char **endptr, int base);
- #endif
- unsigned long atoul(const char *nptr);
- uint8_t strtou8(const char *nptr, char **endptr, int base);
+--- a/floppyd_io.c
++++ b/floppyd_io.c
+@@ -470,7 +470,7 @@
+ 	  p++;
+ 	*drive = 0;
+ 	if(*p >= '0' && *p <= '9')
+-	  *drive = strtoi(p, &p, 0);
++	  *drive = (int)strtol(p, &p, 0);
+ 
+ 	*display = strdup(newname);
+ 
